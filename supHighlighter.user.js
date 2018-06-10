@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name         supHighlighter
-// @namespace    http://github.io/tim-hong
+// @namespace    supHighlighter
+// @license      Apache 2.0; https://github.com/tim-hong/supHighlighter/blob/master/LICENSE
 // @version      0.1
 // @description  Highlighter for suptg qst archive
 // @author       tim-hong
@@ -15,6 +16,8 @@
 // @grant        unsafeWindow
 // @grant        GM_addStyle
 // @run-at       document-idle
+// @updateURL    https://github.com/tim-hong/supHighlighter/raw/master/supHighlighter.meta.js
+// @downloadURL  https://github.com/tim-hong/supHighlighter/raw/master/supHighlighter.user.js
 // ==/UserScript==
 
 (function() {
@@ -89,12 +92,12 @@
         font-family: monospace;
         min-width: 100%;
         max-width: 100%;
-        height: 460px;
+        height: 440px;
         margin: auto;
         padding: 2px 4px 3px;
         background: #373b41 !important;
         border: 1px solid #373b41 !important;
-        color: #c5c8c6;
+        color: #c5c8c6 !important;
     }
 
     textarea:hover {
@@ -112,6 +115,7 @@
         position: absolute;
         right: 16px;
         backface-visibility: hidden;
+        margin-top: 10px;
     }
 
     #supsave-filter span {
