@@ -6,7 +6,10 @@ Allows users to apply custom css to posts that are created by users with specifi
 Meant to be used with:
 * [TamperMonkey](http://tampermonkey.net/)
 * Stylish [(chrome)](https://chrome.google.com/webstore/detail/stylish-custom-themes-for/fjnbnpbmkenffdnngjfgmeleoegfcffe) [(firefox)](https://addons.mozilla.org/en-US/firefox/addon/stylish/)
+
 Currently only supports plaintext comparison
+
+[Install](https://github.com/tim-hong/supHighlighter/raw/master/supHighlighter.user.js)
 ## Guide
 
 There are 3 arguments. name: the name or tripcode, type: `name` or `trip`, and css: the css class name to apply.
