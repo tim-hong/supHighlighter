@@ -17,3 +17,4 @@ For example `softmaza;name;thebest` or `!exampletrip;trip;thetrip`
 ## Todo
 * Add regex support
 * Add settings tab to allow changing delimiter and adding of custom css
+* Add more features
