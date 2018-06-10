@@ -261,7 +261,7 @@
             let delimiter = GM_getValue("delimiter", ";")
             let args = filts.split(delimiter);
             //should be 3 per line
-            if(args.length <= 3) return;
+            if(args.length < 3) return;
             //args[0] should be name/trip,args[1] should be type,args[2] should be class
             switch(args[1]) {
                 case "name":
