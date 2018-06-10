@@ -76,6 +76,7 @@
         padding: 2px 16px;
         background-color: #373b41;
         color: #c5c8c6;
+        margin-top: 9px;
     }
 
     .supmodal-body {
@@ -86,13 +87,16 @@
         overflow: auto;
         margin: auto;
     }
-
+    .supmodal-body code {
+        background: #fff !important;
+        color: #000 !important;
+    }
     .supmodal-body textarea{
         box-sizing: border-box !important;
-        font-family: monospace;
+        font-family: monospace !important;
         min-width: 100%;
         max-width: 100%;
-        height: 440px;
+        height: 380px;
         margin: auto;
         padding: 2px 4px 3px;
         background: #373b41 !important;
@@ -114,13 +118,13 @@
         box-sizing: border-box !important;
         position: absolute;
         right: 16px;
+        bottom: 9px;
         backface-visibility: hidden;
         margin-top: 10px;
     }
 
     #supsave-filter span {
         text-align: center;
-        line-height: 10px;
         display: block;
         transform: translateY(-1px);
     }
@@ -178,11 +182,15 @@
             <div class="supmodal-content">
                 <div class="supmodal-header">
                     <span id="supclose" class="supclose">&times;</span>
-                    <h2>Modal Header</h2>
+                    <h2>suptg /qst/ Highlighter</h2>
                 </div>
                 <div class="supmodal-body">
-                    <p>Some text in the Modal Body</p>
-                    <p>Some other text...</p>
+                    <h3>Guide</h3>
+                    <p>There are 3 arguments. name: the name or tripcode, type: <code>name</code> or <code>trip</code>, and css: the css class name to apply.<br>
+                    One entry per line. Lines starting with a <code>#</code> will be ignored.<br>
+                    Entries should be formatted like name;type;css<br>
+                    For example <code>softmaza;name;thebest</code> or <code>!exampletrip;trip;thetrip</code><br>
+                    Regex search currently unsupported</p>
                     <div>
                         <textarea id="supfilter" class="field" spellcheck="false"></textarea>
                     </div>
@@ -195,7 +203,7 @@
         </div>`
         document.body.innerHTML += modalText;
         modal = document.getElementById('supmodal');
-        closer  = document.getElementById('supclose');
+        closer = document.getElementById('supclose');
         closer.addEventListener("click", hideModal);
         window.onclick = function(event) {
             if (event.target == modal) {
@@ -212,7 +220,7 @@
         let menuItem = document.createElement("span");
         menuItem.setAttribute("id","supHighlighterSettings");
         let menuItemA = document.createElement("a");
-        menuItemA.innerText = " supHighlighter";
+        menuItemA.innerHTML = " &#9881;";
         menuItemA.setAttribute("href","javascript:void(0)");
         menuItem.appendChild(menuItemA);
         menuItem.addEventListener("click",showModal);
@@ -226,32 +234,62 @@
         let result = GM_listValues();
         //if property never made then create a blank one
         if(result.length === 0) {
-            GM_setValue("savedFilter", "");
+            GM_setValue("savedFilter", "#softmaza;name;thebest\n#!exampletrip;trip;thetrip");
         }
-        savedFilter = GM_getValue("savedFilter", "");
+        savedFilter = GM_getValue("savedFilter", "#softmaza;name;thebest\n#!exampletrip;trip;thetrip");
         processFilters(savedFilter.split(/\r?\n/));
     }
 
     function saveHighlight() {
         GM_setValue("savedFilter", textbox.value);
-        savedFilter = GM_getValue("savedFilter", "");
-        GM_log("Value of saved: " + savedFilter);
+        savedFilter = GM_getValue("savedFilter", "#softmaza;name;thebest\n#!exampletrip;trip;thetrip");
     }
 
     function deleteValues() {
         let values = GM_listValues();
         values.forEach(e => {
-            GM_log("Deleting:" + e);
             GM_deleteValue(e);
         });
     }
 
     function processFilters(savedFilters) {
-        GM_log(savedFilters);
+        let nameFilters = new Map();
+        let tripFilters = new Map();
+        savedFilters.forEach( filts => {
+            filts = filts.trim();
+            if(filts.charAt(0) === "#") return;
+            let delimiter = GM_getValue("delimiter", ";")
+            let args = filts.split(delimiter);
+            //should be 3 per line
+            if(args.length <= 3) return;
+            //args[0] should be name/trip,args[1] should be type,args[2] should be class
+            switch(args[1]) {
+                case "name":
+                    nameFilters.set(args[0],args[2]);
+                    break;
+                case "trip":
+                    tripFilters.set(args[0],args[2]);
+            }
+        });
+        if(nameFilters.size === 0 && tripFilters.size === 0) return;
         //iterate through each postContainer
-        //open postInfo
-        //open nameBlock
-        //if name or postertrip is in list then do the things
+        let posts = document.getElementsByClassName("postContainer");
+        for(let i = 0; i < posts.length; i++) {
+            let post = posts.item(i);
+            let nbs = post.getElementsByClassName('nameBlock');
+            for(let i2 = 0; i2 < nbs.length; i2++) {
+                let nb = nbs.item(i2);
+                let name = nb.getElementsByClassName('name').item(0).innerText;
+                let trip = "";
+                if(nb.getElementsByClassName('postertrip').length > 0)
+                    trip = nb.getElementsByClassName('postertrip').item(0).innerText;
+                if(nameFilters.get(name) || tripFilters.get(trip)) {
+                    let cssClass = (tripFilters.get(trip)) ? tripFilters.get(trip) : nameFilters.get(name);
+                    post.className += " " + cssClass;
+                    break;
+                }
+            }
+        }
     }
 
     setup();
